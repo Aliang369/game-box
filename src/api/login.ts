@@ -1,6 +1,9 @@
 import type { IAuthLoginRes, ICaptcha, IDoubleTokenRes, IUpdateInfo, IUpdatePassword, IUserInfoRes } from './types/login'
 import { http } from '@/http/http'
 
+// 是否启用 Mock 模式（开发环境自动开启，生产环境走真实接口）
+const isMockEnabled = import.meta.env.DEV
+
 /**
  * 登录表单
  */
@@ -22,6 +25,9 @@ export function getCode() {
  * @param loginForm 登录表单
  */
 export function login(loginForm: ILoginForm) {
+  if (isMockEnabled) {
+    return mockLogin(loginForm)
+  }
   return http.post<IAuthLoginRes>('/auth/login', loginForm)
 }
 
@@ -37,6 +43,9 @@ export function refreshToken(refreshToken: string) {
  * 获取用户信息
  */
 export function getUserInfo() {
+  if (isMockEnabled) {
+    return mockGetUserInfo()
+  }
   return http.get<IUserInfoRes>('/user/info')
 }
 
@@ -44,6 +53,9 @@ export function getUserInfo() {
  * 退出登录
  */
 export function logout() {
+  if (isMockEnabled) {
+    return Promise.resolve()
+  }
   return http.get<void>('/auth/logout')
 }
 
@@ -82,4 +94,30 @@ export function getWxCode() {
  */
 export function wxLogin(data: { code: string }) {
   return http.post<IAuthLoginRes>('/auth/wxLogin', data)
+}
+
+// ============ Mock 实现 ============
+
+function mockLogin(_loginForm: ILoginForm): Promise<IAuthLoginRes> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        token: `mock_token_${Date.now()}`,
+        expiresIn: 7200, // 2小时
+      })
+    }, 500)
+  })
+}
+
+function mockGetUserInfo(): Promise<IUserInfoRes> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        userId: 10001,
+        username: 'test_user',
+        nickname: '一念',
+        avatar: '/static/logo.png',
+      })
+    }, 200)
+  })
 }

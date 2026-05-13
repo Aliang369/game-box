@@ -103,8 +103,8 @@ export const useTokenStore = defineStore(
      * 登录成功后处理逻辑
      * @param tokenInfo 登录返回的token信息
      */
-    async function _postLogin(tokenInfo: IAuthLoginRes) {
-      setTokenInfo(tokenInfo)
+    async function _postLogin(tokenRes: IAuthLoginRes) {
+      setTokenInfo(tokenRes)
       const userStore = useUserStore()
       await userStore.fetchUserInfo()
     }
@@ -121,18 +121,10 @@ export const useTokenStore = defineStore(
         const res = await _login(loginForm)
         console.log('普通登录-res: ', res)
         await _postLogin(res)
-        uni.showToast({
-          title: '登录成功',
-          icon: 'success',
-        })
         return res
       }
       catch (error) {
         console.error('登录失败:', error)
-        uni.showToast({
-          title: '登录失败，请重试',
-          icon: 'error',
-        })
         throw error
       }
       finally {

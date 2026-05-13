@@ -81,6 +81,12 @@ export default defineConfig({
     'i-carbon-menu',
     'i-carbon-favorite-filled',
     'i-carbon-favorite',
+    'i-carbon-chat',
+    'i-carbon-view',
+    'i-carbon-bookmark',
+    'i-carbon-bookmark-filled',
+    'i-carbon-thumbs-up',
+    'i-carbon-thumbs-up-filled',
   ],
   rules: [
     [

@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useToast } from 'wot-design-uni'
+import { useTokenStore } from '@/store/token'
+
 definePage({
   style: {
     navigationStyle: 'custom',
@@ -9,7 +12,10 @@ definePage({
 
 type AuthMode = 'login' | 'register'
 
+const toast = useToast('auth-toast')
+const tokenStore = useTokenStore()
 const authMode = ref<AuthMode>('login')
+const loading = ref(false)
 const loginForm = ref({
   account: '',
   password: '',
@@ -40,37 +46,66 @@ function leftClick() {
   }
 }
 
-function handleSubmit() {
+async function handleSubmit() {
+  if (loading.value)
+    return
+
   if (isLogin.value) {
     if (!loginForm.value.account.trim()) {
-      uni.showToast({ title: '请输入账号', icon: 'none' })
+      toast.warning('请输入账号')
       return
     }
     if (!loginForm.value.password.trim()) {
-      uni.showToast({ title: '请输入登录密码', icon: 'none' })
+      toast.warning('请输入登录密码')
       return
     }
-    uni.showToast({ title: '登录成功', icon: 'success' })
+
+    loading.value = true
+    try {
+      await tokenStore.login({
+        username: loginForm.value.account.trim(),
+        password: loginForm.value.password.trim(),
+      })
+      // 登录成功
+      toast.success('登录成功')
+      setTimeout(() => {
+        const pages = getCurrentPages()
+        if (pages.length > 1) {
+          uni.navigateBack({ delta: 1 })
+        }
+        else {
+          uni.switchTab({ url: '/pages/user/user' })
+        }
+      }, 500)
+    }
+    catch {
+      toast.error('登录失败，请检查账号密码后重试')
+    }
+    finally {
+      loading.value = false
+    }
     return
   }
 
+  // 注册逻辑
   if (!registerForm.value.nickname.trim()) {
-    uni.showToast({ title: '请输入昵称', icon: 'none' })
+    toast.warning('请输入昵称')
     return
   }
   if (!registerForm.value.account.trim()) {
-    uni.showToast({ title: '请输入账号', icon: 'none' })
+    toast.warning('请输入账号')
     return
   }
   if (!registerForm.value.password.trim()) {
-    uni.showToast({ title: '请输入密码', icon: 'none' })
+    toast.warning('请输入密码')
     return
   }
   if (registerForm.value.password !== registerForm.value.confirmPassword) {
-    uni.showToast({ title: '两次密码不一致', icon: 'none' })
+    toast.warning('两次密码不一致')
     return
   }
-  uni.showToast({ title: '注册成功', icon: 'success' })
+  // TODO: 接入注册 API
+  toast.success('注册成功')
   authMode.value = 'login'
 }
 </script>
@@ -177,9 +212,14 @@ function handleSubmit() {
 
         <view
           class="auth-main-btn mt-24px h-50px w-full flex items-center justify-center rounded-30px text-16px text-white font-700"
+          :class="{ 'opacity-70': loading }"
           @click="handleSubmit"
         >
-          {{ actionText }}
+          <text v-if="!loading">{{ actionText }}</text>
+          <view v-else class="flex items-center gap-8px">
+            <view class="loading-spinner" />
+            <text>{{ isLogin ? '登录中...' : '注册中...' }}</text>
+          </view>
         </view>
 
         <view class="mt-18px flex items-center justify-center gap-6px text-12px text-[#8F96A3]">
@@ -190,6 +230,7 @@ function handleSubmit() {
         </view>
       </view>
     </view>
+    <wd-toast selector="auth-toast" position="top" custom-class="auth-toast" />
   </view>
 </template>
 
@@ -233,5 +274,24 @@ function handleSubmit() {
 
 .auth-field :deep(.wd-input__inner) {
   min-height: 22px;
+}
+
+:deep(.auth-toast) {
+  margin-top: calc(env(safe-area-inset-top) + 72px);
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

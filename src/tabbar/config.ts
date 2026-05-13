@@ -56,6 +56,13 @@ export const customTabbarList: CustomTabBarItem[] = [
     iconActive: '/static/tabs/NewsSelected.png',
   },
   {
+    text: '圈子',
+    pagePath: 'pages/circle/circle',
+    iconType: 'image',
+    icon: '/static/tabs/Circle.svg',
+    iconActive: '/static/tabs/CircleSelected.svg',
+  },
+  {
     text: '我的',
     pagePath: 'pages/user/user',
     iconType: 'image',

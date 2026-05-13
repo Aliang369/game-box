@@ -1,10 +1,15 @@
 <script lang="ts" setup>
+import { useTokenStore } from '@/store/token'
+
 definePage({
   style: {
     navigationStyle: 'custom',
     navigationBarTitleText: '设置',
   },
 })
+
+const tokenStore = useTokenStore()
+const isLoggedIn = computed(() => tokenStore.hasLogin)
 
 function leftClick() {
   const pages = getCurrentPages()
@@ -15,6 +20,28 @@ function leftClick() {
 
 function goToPrivacy() {
   uni.navigateTo({ url: '/pages/settings/privacy/privacy' })
+}
+
+function handleLogout() {
+  uni.showModal({
+    title: '提示',
+    content: '确定要退出登录吗？',
+    success: async (res) => {
+      if (res.confirm) {
+        try {
+          await tokenStore.logout()
+          uni.showToast({ title: '已退出登录', icon: 'success' })
+          setTimeout(() => {
+            uni.switchTab({ url: '/pages/user/user' })
+          }, 500)
+        }
+        catch {
+          // tokenStore.logout 内部已清除本地状态，仍然跳转
+          uni.switchTab({ url: '/pages/user/user' })
+        }
+      }
+    },
+  })
 }
 </script>
 
@@ -61,7 +88,7 @@ function goToPrivacy() {
       </view>
 
       <!-- 退出登录 -->
-      <view class="h-50px w-full rounded-50px bg-white mt-35px flex items-center justify-center">
+      <view v-if="isLoggedIn" class="h-50px w-full rounded-50px bg-white mt-35px flex items-center justify-center" @click="handleLogout">
         <text class="text-[#8b90a4] font-600 text-center">退出登录</text>
       </view>
     </view>
