@@ -1,0 +1,21 @@
+[{
+		"exploreId": "1",
+		"exploreState": 0,
+		"exploreDate": "2025年3月15日至2025年12月31日",
+		"exploreImage": "/static/explore/newsGame1.jpg",
+		"exploreVisibleness": 0
+	}, {
+		"exploreId": "2",
+		"exploreState": 1,
+		"exploreDate": "2025年3月15日至2025年12月31日",
+		"exploreImage": "/static/explore/newsGame1.jpg",
+		"exploreVisibleness": 0
+	},
+	{
+		"exploreId": "2",
+		"exploreState": 2,
+		"exploreDate": "2025年3月15日至2025年12月31日",
+		"exploreImage": "/static/explore/newsGame1.jpg",
+		"exploreVisibleness": 0
+	}
+]

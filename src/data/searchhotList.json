@@ -1,0 +1,29 @@
+[{
+		"Searchhotid": 1,
+		"gameid": "1",
+		"SearchhotVisibleness": 1 // 1可见 0不可见
+	},
+	{
+		"Searchhotid": 2,
+		"gameid": "2",
+		"SearchhotVisibleness": 1 // 1可见 0不可见
+	},
+	{
+		"Searchhotid": 3,
+		"gameid": "3",
+		"SearchhotVisibleness": 1 // 1可见 0不可见
+	},
+	{
+		"Searchhotid": 4,
+		"gameid": "4",
+		"SearchhotVisibleness": 1 // 1可见 0不可见
+	},
+	{
+		"Searchhotid": 5,
+		"gameid": "5",
+		"SearchhotVisibleness": 1 // 1可见 0不可见
+	}
+
+
+
+]

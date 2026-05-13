@@ -1,0 +1,35 @@
+// 全局样式 - 仅保留必要的重置和无法用 UnoCSS 表达的样式
+
+:root,
+page {
+  // 主题色
+  --primary-color: #12cdb0;
+  --bg-color: #F7F7FA;
+
+  // wot-design-uni 主题色覆盖
+  --wot-color-theme: #12cdb0;
+}
+
+// 隐藏滚动条
+::-webkit-scrollbar {
+  display: none;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  background: transparent;
+}
+
+// 页面基础背景
+page {
+  background-color: #F7F7FA;
+  margin: 0;
+  padding: 0;
+}
+
+// 底部提示文字
+.bottom-text {
+  font-size: 12px;
+  text-align: center;
+  color: #bfbfbf;
+  padding: 20px 0;
+}

@@ -1,0 +1,31 @@
+[{
+		"Swiperid": 1,
+		"gameid": "1",
+		"Swiperimg": "https://alicdn.buffcz.com/foxweb/20250320/17424554280508232行界(1).jpg",
+		"SwiperVisibleness": 1 // 1可见 0不可见
+	},
+	{
+		"Swiperid": 2,
+		"gameid": "2",
+		"Swiperimg": "https://alicdn.buffcz.com/foxweb/20250320/17424561488456513吞噬星空：黎明（动漫原版0.1折）-爆款_new(1).jpg",
+		"SwiperVisibleness": 1
+	},
+	{
+		"Swiperid": 3,
+		"gameid": "3",
+		"Swiperimg": "https://alicdn.buffcz.com/foxweb/20250103/17358974151918108三国如龙传（0.1折送魔吕布）-爆款_new(1).jpg",
+		"SwiperVisibleness": 1
+	},
+	{
+		"Swiperid": 4,
+		"gameid": "4",
+		"Swiperimg": "https://alicdn.buffcz.com/foxweb/20250103/17358979607869417978x1200.jpg",
+		"SwiperVisibleness": 1
+	},
+	{
+		"Swiperid": 5,
+		"gameid": "5",
+		"Swiperimg": "https://alicdn.buffcz.com/foxweb/20250320/17424557941350490太吾纪元（0.1折定制版）-爆款.jpg",
+		"SwiperVisibleness": 1
+	}
+]
