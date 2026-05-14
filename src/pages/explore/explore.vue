@@ -4,7 +4,7 @@ import { useGameStore } from '@/store/game'
 definePage({
   style: {
     navigationStyle: 'custom',
-    navigationBarTitleText: '探索',
+    navigationBarTitleText: '福利',
   },
 })
 

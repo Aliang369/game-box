@@ -13,6 +13,7 @@ const gameStore = useGameStore()
 // 表单数据（仅 UI 交互，后端接入后从接口读取）
 const form = ref({
   nickname: gameStore.currentUser?.Nickname || '',
+  bio: '',
   email: '',
   gender: '',
   birthday: '',
@@ -125,56 +126,66 @@ function handleSave() {
       </view>
 
       <!-- 昵称 -->
-      <view class="form-item mt-18px">
-        <text class="form-label text-14px text-[#272E3B] font-500">昵称</text>
-        <view class="form-input mt-8px">
+      <view class="form-row mt-18px flex items-center">
+        <text class="form-label w-70px flex-shrink-0 text-14px text-[#272E3B] font-500">昵称</text>
+        <view class="flex-1">
           <wd-input
             v-model="form.nickname"
             placeholder="请输入昵称"
             no-border
             clearable
-            custom-style="padding: 12px 14px; border-radius: 10px; background: #F7F7FA; border: 1px solid rgba(6,2,32,0.05)"
+            custom-style="padding: 10px 14px; border-radius: 10px; background: #F7F7FA; border: 1px solid rgba(6,2,32,0.05)"
+          />
+        </view>
+      </view>
+
+      <!-- 个人简介 -->
+      <view class="form-row mt-14px flex items-center">
+        <text class="form-label w-70px flex-shrink-0 text-14px text-[#272E3B] font-500">简介</text>
+        <view class="flex-1">
+          <wd-input
+            v-model="form.bio"
+            placeholder="介绍一下自己吧"
+            no-border
+            :maxlength="50"
+            custom-style="padding: 10px 14px; border-radius: 10px; background: #F7F7FA; border: 1px solid rgba(6,2,32,0.05)"
           />
         </view>
       </view>
 
       <!-- 邮箱 -->
-      <view class="form-item mt-16px">
-        <text class="form-label text-14px text-[#272E3B] font-500">邮箱</text>
-        <view class="form-input mt-8px">
+      <view class="form-row mt-14px flex items-center">
+        <text class="form-label w-70px flex-shrink-0 text-14px text-[#272E3B] font-500">邮箱</text>
+        <view class="flex-1">
           <wd-input
             v-model="form.email"
             placeholder="请输入邮箱地址"
             no-border
             clearable
-            custom-style="padding: 12px 14px; border-radius: 10px; background: #F7F7FA; border: 1px solid rgba(6,2,32,0.05)"
+            custom-style="padding: 10px 14px; border-radius: 10px; background: #F7F7FA; border: 1px solid rgba(6,2,32,0.05)"
           />
         </view>
       </view>
 
       <!-- 出生日期 -->
-      <view class="form-item mt-16px">
-        <text class="form-label text-14px text-[#272E3B] font-500">出生日期</text>
-        <view class="mt-8px" @click="openDatePicker">
-          <view class="flex items-center justify-between rounded-10px bg-[#F7F7FA] px-14px py-12px" style="border: 1px solid rgba(6,2,32,0.05)">
-            <text class="text-13px" :class="birthdayDisplay ? 'text-[#272E3B] opacity-70' : 'text-[#C0C4CC]'">
-              {{ birthdayDisplay || '请选择出生日期' }}
-            </text>
-            <text class="text-10px text-[#C0C4CC]">▼</text>
-          </view>
+      <view class="form-row mt-14px flex items-center" @click="openDatePicker">
+        <text class="form-label w-70px flex-shrink-0 text-14px text-[#272E3B] font-500">生日</text>
+        <view class="flex flex-1 items-center justify-between rounded-10px bg-[#F7F7FA] px-14px py-10px" style="border: 1px solid rgba(6,2,32,0.05)">
+          <text class="text-13px" :class="birthdayDisplay ? 'text-[#272E3B] opacity-70' : 'text-[#C0C4CC]'">
+            {{ birthdayDisplay || '请选择出生日期' }}
+          </text>
+          <text class="text-10px text-[#C0C4CC]">▼</text>
         </view>
       </view>
 
       <!-- 性别 -->
-      <view class="form-item mt-16px">
-        <text class="form-label text-14px text-[#272E3B] font-500">性别</text>
-        <view class="mt-8px" @click="showGenderPicker = true">
-          <view class="flex items-center justify-between rounded-10px bg-[#F7F7FA] px-14px py-12px" style="border: 1px solid rgba(6,2,32,0.05)">
-            <text class="text-13px" :class="form.gender ? 'text-[#272E3B] opacity-70' : 'text-[#C0C4CC]'">
-              {{ form.gender || '请选择性别' }}
-            </text>
-            <text class="text-10px text-[#C0C4CC]">▼</text>
-          </view>
+      <view class="form-row mt-14px flex items-center" @click="showGenderPicker = true">
+        <text class="form-label w-70px flex-shrink-0 text-14px text-[#272E3B] font-500">性别</text>
+        <view class="flex flex-1 items-center justify-between rounded-10px bg-[#F7F7FA] px-14px py-10px" style="border: 1px solid rgba(6,2,32,0.05)">
+          <text class="text-13px" :class="form.gender ? 'text-[#272E3B] opacity-70' : 'text-[#C0C4CC]'">
+            {{ form.gender || '请选择性别' }}
+          </text>
+          <text class="text-10px text-[#C0C4CC]">▼</text>
         </view>
       </view>
     </view>
@@ -232,14 +243,14 @@ function handleSave() {
   position: relative;
 }
 
-.form-item :deep(.wd-input__inner),
-.form-item :deep(.uni-input-wrapper),
-.form-item :deep(.uni-input-input),
-.form-item :deep(.wd-input__placeholder) {
+.form-row :deep(.wd-input__inner),
+.form-row :deep(.uni-input-wrapper),
+.form-row :deep(.uni-input-input),
+.form-row :deep(.wd-input__placeholder) {
   background: transparent !important;
 }
 
-.form-item :deep(.wd-input__inner) {
+.form-row :deep(.wd-input__inner) {
   min-height: 20px;
 }
 

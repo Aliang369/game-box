@@ -1,5 +1,7 @@
 <script lang="ts" setup>
+import { useFansStore } from '@/store/fans'
 import { useFavoriteStore } from '@/store/favorite'
+import { useFollowStore } from '@/store/follow'
 import { useGameStore } from '@/store/game'
 import { useTokenStore } from '@/store/token'
 
@@ -12,6 +14,8 @@ definePage({
 
 const gameStore = useGameStore()
 const favoriteStore = useFavoriteStore()
+const followStore = useFollowStore()
+const fansStore = useFansStore()
 const tokenStore = useTokenStore()
 
 const isLoggedIn = computed(() => tokenStore.hasLogin)
@@ -19,6 +23,18 @@ const isLoggedIn = computed(() => tokenStore.hasLogin)
 // 格式化收藏数量
 const formattedFavoriteCount = computed(() => {
   const count = favoriteStore.favoriteCount
+  return `${count}`
+})
+
+// 格式化关注数量
+const formattedFollowCount = computed(() => {
+  const count = followStore.followCount
+  return `${count}`
+})
+
+// 格式化粉丝数量
+const formattedFansCount = computed(() => {
+  const count = fansStore.fansCount
   return `${count}`
 })
 
@@ -44,6 +60,14 @@ function goToSettings() {
 
 function goToFavorites() {
   uni.navigateTo({ url: '/pages/favorites/favorites' })
+}
+
+function goToFollowList() {
+  uni.navigateTo({ url: '/pages/follow/follow' })
+}
+
+function goToFansList() {
+  uni.navigateTo({ url: '/pages/fans/fans' })
 }
 
 function goToLogin() {
@@ -94,13 +118,13 @@ function copyId() {
 
         <view class="mx-20px mt-20px rounded-16px bg-white px-10px py-16px" style="box-shadow: 0 4px 20px rgba(53, 64, 90, 0.08)">
           <view class="flex items-center justify-around">
-            <view class="flex flex-col items-center">
-              <text class="text-22px text-[#272E3B] font-bold">0</text>
+            <view class="flex flex-col items-center" @click="goToFollowList">
+              <text class="text-22px text-[#272E3B] font-bold">{{ formattedFollowCount }}</text>
               <text class="mt-4px text-12px text-[#8F92A1]">关注</text>
             </view>
             <view class="h-30px w-1px bg-[#E8E8E8]" />
-            <view class="flex flex-col items-center">
-              <text class="text-22px text-[#272E3B] font-bold">0</text>
+            <view class="flex flex-col items-center" @click="goToFansList">
+              <text class="text-22px text-[#272E3B] font-bold">{{ formattedFansCount }}</text>
               <text class="mt-4px text-12px text-[#8F92A1]">粉丝</text>
             </view>
             <view class="h-30px w-1px bg-[#E8E8E8]" />

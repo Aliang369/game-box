@@ -49,18 +49,18 @@ export const customTabbarList: CustomTabBarItem[] = [
     iconActive: '/static/tabs/HomeSelected.png',
   },
   {
-    text: '探索',
+    text: '福利',
     pagePath: 'pages/explore/explore',
     iconType: 'image',
-    icon: '/static/tabs/News.png',
-    iconActive: '/static/tabs/NewsSelected.png',
+    icon: '/static/tabs/Welfare.png',
+    iconActive: '/static/tabs/WelfareSelected.png',
   },
   {
     text: '圈子',
     pagePath: 'pages/circle/circle',
     iconType: 'image',
-    icon: '/static/tabs/Circle.svg',
-    iconActive: '/static/tabs/CircleSelected.svg',
+    icon: '/static/tabs/Circle.png',
+    iconActive: '/static/tabs/CircleSelected.png',
   },
   {
     text: '我的',

@@ -11,6 +11,9 @@ definePage({
 const tokenStore = useTokenStore()
 const isLoggedIn = computed(() => tokenStore.hasLogin)
 
+// 退出登录确认弹窗
+const logoutPopupRef = ref()
+
 function leftClick() {
   const pages = getCurrentPages()
   if (pages.length > 1) {
@@ -23,25 +26,20 @@ function goToPrivacy() {
 }
 
 function handleLogout() {
-  uni.showModal({
-    title: '提示',
-    content: '确定要退出登录吗？',
-    success: async (res) => {
-      if (res.confirm) {
-        try {
-          await tokenStore.logout()
-          uni.showToast({ title: '已退出登录', icon: 'success' })
-          setTimeout(() => {
-            uni.switchTab({ url: '/pages/user/user' })
-          }, 500)
-        }
-        catch {
-          // tokenStore.logout 内部已清除本地状态，仍然跳转
-          uni.switchTab({ url: '/pages/user/user' })
-        }
-      }
-    },
-  })
+  logoutPopupRef.value?.open()
+}
+
+async function confirmLogout() {
+  try {
+    await tokenStore.logout()
+    uni.showToast({ title: '已退出登录', icon: 'success' })
+    setTimeout(() => {
+      uni.switchTab({ url: '/pages/user/user' })
+    }, 500)
+  }
+  catch {
+    uni.switchTab({ url: '/pages/user/user' })
+  }
 }
 </script>
 
@@ -92,5 +90,17 @@ function handleLogout() {
         <text class="text-[#8b90a4] font-600 text-center">退出登录</text>
       </view>
     </view>
+
+    <!-- 退出登录确认弹窗 -->
+    <ConfirmPopup
+      ref="logoutPopupRef"
+      title="退出登录"
+      content="确定要退出登录吗？退出后需要重新登录才能使用完整功能。"
+      confirm-text="退出"
+      cancel-text="取消"
+      confirm-color="linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)"
+      icon-type="warning"
+      @confirm="confirmLogout"
+    />
   </view>
 </template>
