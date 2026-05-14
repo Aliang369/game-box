@@ -62,6 +62,10 @@ function goToFavorites() {
   uni.navigateTo({ url: '/pages/favorites/favorites' })
 }
 
+function goToHistory() {
+  uni.navigateTo({ url: '/pages/history/history' })
+}
+
 function goToFollowList() {
   uni.navigateTo({ url: '/pages/follow/follow' })
 }
@@ -78,20 +82,8 @@ function goToProfile() {
   uni.navigateTo({ url: '/pages/profile/profile' })
 }
 
-function copyId() {
-  const user = gameStore.currentUser
-  if (!user)
-    return
-  const idText = `ID：${user.id}`
-  uni.setClipboardData({
-    data: idText,
-    success: () => {
-      uni.showToast({ title: 'ID复制成功', icon: 'none' })
-    },
-    fail: () => {
-      uni.showToast({ title: 'ID复制失败', icon: 'none' })
-    },
-  })
+function goToUserProfile() {
+  uni.navigateTo({ url: '/pages/userprofile/userprofile' })
 }
 </script>
 
@@ -101,18 +93,13 @@ function copyId() {
     <template v-if="isLoggedIn">
       <view class="user-header relative overflow-hidden pb-16px pt-60px" style="background: linear-gradient(180deg, #E5F9FF 0%, #d4f5ee 50%, #F7F7FA 100%)">
         <view class="flex flex-col items-center mt-10px">
-          <view class="h-80px w-80px overflow-hidden rounded-full shadow-lg" style="box-shadow: 0 8px 24px rgba(18, 205, 176, 0.2)">
+          <view class="h-80px w-80px overflow-hidden rounded-full shadow-lg" style="box-shadow: 0 8px 24px rgba(18, 205, 176, 0.2)" @click="goToUserProfile">
             <image :src="gameStore.currentUser?.picture || '/static/user/UserNull.svg'" mode="aspectFill" class="h-full w-full" />
           </view>
 
           <view class="mt-12px flex items-center gap-6px" @click="goToProfile">
             <text class="text-22px text-[#272E3B] font-bold">{{ gameStore.currentUser?.Nickname || '用户' }}</text>
             <image src="/static/user/edit.png" class="h-16px w-16px opacity-60" />
-          </view>
-
-          <view class="mt-6px flex items-center gap-6px" @click="copyId">
-            <text class="text-13px text-[#8F92A1]">@ID {{ gameStore.currentUser?.id || '---' }}</text>
-            <image src="/static/user/copy.png" class="h-14px w-14px opacity-50" />
           </view>
         </view>
 
@@ -143,6 +130,18 @@ function copyId() {
               <view class="i-carbon-favorite w-24px h-24px text-[#666]" />
             </view>
             <text class="text-15px text-[#272E3B]">我的收藏</text>
+          </view>
+          <image src="/static/user/right_icon.png" class="h-16px w-16px opacity-40" />
+        </view>
+
+        <view class="mx-20px h-1px bg-[#F2F2F2]" />
+
+        <view class="menu-item flex items-center justify-between px-20px py-16px" @click="goToHistory">
+          <view class="flex items-center gap-14px">
+            <view class="h-30px w-30px flex items-center justify-center">
+              <view class="i-carbon-time w-24px h-24px text-[#666]" />
+            </view>
+            <text class="text-15px text-[#272E3B]">浏览历史</text>
           </view>
           <image src="/static/user/right_icon.png" class="h-16px w-16px opacity-40" />
         </view>
@@ -234,6 +233,18 @@ function copyId() {
               <view class="i-carbon-favorite w-24px h-24px text-[#666]" />
             </view>
             <text class="text-15px text-[#272E3B]">我的收藏</text>
+          </view>
+          <image src="/static/user/right_icon.png" class="h-16px w-16px opacity-40" />
+        </view>
+
+        <view class="mx-20px h-1px bg-[#F2F2F2]" />
+
+        <view class="menu-item flex items-center justify-between px-20px py-16px" @click="goToHistory">
+          <view class="flex items-center gap-14px">
+            <view class="h-30px w-30px flex items-center justify-center">
+              <view class="i-carbon-time w-24px h-24px text-[#666]" />
+            </view>
+            <text class="text-15px text-[#272E3B]">浏览历史</text>
           </view>
           <image src="/static/user/right_icon.png" class="h-16px w-16px opacity-40" />
         </view>

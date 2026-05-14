@@ -227,9 +227,22 @@ function formatReplyTime(timestamp: number) {
 }
 
 function goDetail(post: typeof posts.value[0]) {
-  uni.navigateTo({
-    url: `/pages/circle/detail?id=${post.id}`,
-  })
+  // id=2 宝藏独立游戏推荐 使用动态详情页展示
+  if (post.id === 2) {
+    uni.navigateTo({
+      url: `/pages/circle/dynamic-detail?id=${post.id}`,
+    })
+  }
+  else {
+    uni.navigateTo({
+      url: `/pages/circle/detail?id=${post.id}`,
+    })
+  }
+}
+
+// 从 HTML 中提取纯文本（列表预览用）
+function stripHtml(html: string) {
+  return html.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim()
 }
 
 function formatCount(count: number) {
@@ -241,6 +254,12 @@ function formatCount(count: number) {
 function goForum(section: typeof forumSections.value[0]) {
   uni.navigateTo({
     url: `/pages/forum/forum?id=${section.id}&title=${encodeURIComponent(section.title)}&color=${encodeURIComponent(section.color)}`,
+  })
+}
+
+function goUserProfile(post: typeof posts.value[0]) {
+  uni.navigateTo({
+    url: `/pages/userprofile/userprofile?id=${post.id}`,
   })
 }
 </script>
@@ -308,16 +327,16 @@ function goForum(section: typeof forumSections.value[0]) {
               @click="goDetail(post)"
             >
               <view class="flex items-center gap-10px">
-                <view class="h-38px w-38px overflow-hidden rounded-full">
+                <view class="h-38px w-38px overflow-hidden rounded-full" @click.stop="goUserProfile(post)">
                   <image :src="post.avatar" mode="aspectFill" class="h-full w-full" />
                 </view>
-                <text class="flex-1 text-14px text-[#272E3B] font-600">{{ post.nickname }}</text>
+                <text class="flex-1 text-14px text-[#272E3B] font-600" @click.stop="goUserProfile(post)">{{ post.nickname }}</text>
               </view>
               <!-- 标题 -->
               <text v-if="post.title" class="mt-10px text-15px text-[#272E3B] font-600 leading-22px">{{ post.title }}</text>
               <!-- 正文 -->
               <view class="mt-8px">
-                <text class="text-14px text-[#3D3D3D] leading-22px">{{ post.content }}</text>
+                <text class="text-14px text-[#3D3D3D] leading-22px">{{ stripHtml(post.content) }}</text>
               </view>
 
               <!-- 图片 -->
@@ -445,16 +464,16 @@ function goForum(section: typeof forumSections.value[0]) {
             >
               <!-- 用户信息 -->
               <view class="flex items-center gap-10px">
-                <view class="h-38px w-38px overflow-hidden rounded-full">
+                <view class="h-38px w-38px overflow-hidden rounded-full" @click.stop="goUserProfile(post)">
                   <image :src="post.avatar" mode="aspectFill" class="h-full w-full" />
                 </view>
-                <text class="flex-1 text-14px text-[#272E3B] font-600">{{ post.nickname }}</text>
+                <text class="flex-1 text-14px text-[#272E3B] font-600" @click.stop="goUserProfile(post)">{{ post.nickname }}</text>
               </view>
 
               <!-- 内容 -->
               <text v-if="post.title" class="mt-10px text-15px text-[#272E3B] font-600 leading-22px">{{ post.title }}</text>
               <view class="mt-8px">
-                <text class="text-14px text-[#3D3D3D] leading-22px">{{ post.content }}</text>
+                <text class="text-14px text-[#3D3D3D] leading-22px">{{ stripHtml(post.content) }}</text>
               </view>
 
               <!-- 图片 -->

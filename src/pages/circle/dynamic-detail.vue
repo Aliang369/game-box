@@ -4,7 +4,7 @@ import { useFollowStore } from '@/store/follow'
 definePage({
   style: {
     navigationStyle: 'custom',
-    navigationBarTitleText: '帖子详情',
+    navigationBarTitleText: '动态详情',
   },
 })
 
@@ -18,165 +18,118 @@ onLoad((options) => {
   }
 })
 
+// 帖子数据
 const post = ref({
   id: 1,
   avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20style%20male%20gamer%20avatar%20portrait%20with%20headphones%20blue%20background&image_size=square',
   nickname: '一念',
-  title: '《黑神话：悟空》第三章通关心得',
+  title: '周末随拍',
   time: '2小时前',
-  content: '刚通关了《黑神话：悟空》第三章，boss战太震撼了！分享一下我的通关心得，希望对还在卡关的朋友有帮助。\n\n第三章的boss需要注意以下几点：\n1. 开场先拉开距离观察攻击模式\n2. 二阶段注意躲避范围技能\n3. 变身时机很关键，建议留到三阶段再用',
+  content: '今天天气超好，出门拍了一组照片，分享给大家看看～\n\n这个角落真的太适合拍照了，光线刚刚好',
   images: [
-    'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=black%20myth%20wukong%20epic%20boss%20battle%20scene%20chinese%20mythology%20dark%20fantasy%20game%20screenshot&image_size=landscape_16_9',
-    'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=black%20myth%20wukong%20monkey%20king%20fighting%20giant%20demon%20cinematic%20game%20art&image_size=landscape_16_9',
-    'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=chinese%20mythology%20temple%20ruins%20dark%20atmosphere%20game%20environment%20concept%20art&image_size=landscape_16_9',
+    'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=beautiful%20sunset%20photography%20golden%20hour%20city%20skyline%20aesthetic&image_size=portrait_4_3',
+    'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cozy%20cafe%20interior%20warm%20lighting%20aesthetic%20photography&image_size=portrait_4_3',
+    'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=street%20photography%20urban%20aesthetic%20moody%20atmosphere%20neon%20lights&image_size=portrait_4_3',
   ],
-  likes: 128,
-  comments: 32,
+  likes: 89,
+  comments: 15,
   liked: false,
   collected: false,
-  collects: 45,
-
-  views: 356,
-  topic: '攻略分享',
-  lastReplyTime: Date.now() - 15 * 60 * 1000,
+  collects: 23,
+  views: 456,
+  topic: '分享',
+  lastReplyTime: Date.now() - 30 * 60 * 1000,
 })
 
+// 图片轮播
+const currentImageIndex = ref(0)
+
+function onSwiperChange(e: any) {
+  currentImageIndex.value = e.detail.current
+}
+
+function previewImage(index: number) {
+  uni.previewImage({
+    current: index,
+    urls: post.value.images,
+  })
+}
+
+// 关注
+const isFollowed = computed(() => followStore.isFollowed(String(post.value.id)))
+
+function toggleFollow() {
+  followStore.toggleFollow({
+    id: String(post.value.id),
+    nickname: post.value.nickname,
+    avatar: post.value.avatar,
+  })
+}
+
+// 点赞
+function toggleLike() {
+  post.value.liked = !post.value.liked
+  post.value.likes += post.value.liked ? 1 : -1
+}
+
+// 收藏
+function toggleCollect() {
+  post.value.collected = !post.value.collected
+  post.value.collects += post.value.collected ? 1 : -1
+}
+
+// 评论数据
 const comments = ref([
   {
     id: 1,
     avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cute%20cartoon%20girl%20gamer%20avatar%20pink%20hair%20purple%20background&image_size=square',
-    nickname: '游戏达人',
-    time: '1小时前',
-    content: '太强了！我卡在第三章boss两天了，今晚按你的方法试试',
+    nickname: '小可爱',
+    time: '30分钟前',
+    content: '拍得好好看！是哪里呀',
     images: [] as string[],
-    likes: 15,
+    likes: 5,
     liked: false,
     replies: [
       {
         id: 101,
         nickname: '一念',
-        replyTo: '游戏达人',
-        content: '加油！注意二阶段的范围技能就好',
-        time: '50分钟前',
-        likes: 3,
+        replyTo: '小可爱',
+        content: '在市中心那条老街，下午四五点光线最好',
+        time: '20分钟前',
+        likes: 2,
         liked: false,
       },
     ],
   },
   {
     id: 2,
-    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cool%20robot%20mech%20avatar%20icon%20sci-fi%20neon%20green%20background&image_size=square',
-    nickname: '像素猎人',
+    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cool%20boy%20avatar%20sunglasses%20blue%20gradient%20background&image_size=square',
+    nickname: '摄影爱好者',
     time: '1小时前',
-    content: '变身时机确实关键，我之前一阶段就用了，后面打得很艰难',
-    images: [
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=game%20boss%20battle%20phase%20two%20transformation%20screenshot&image_size=landscape_16_9',
-    ],
-    likes: 8,
-    liked: true,
-    replies: [],
-  },
-  {
-    id: 3,
-    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=mysterious%20hooded%20character%20avatar%20dark%20fantasy%20style%20orange%20background&image_size=square',
-    nickname: '云玩家',
-    time: '30分钟前',
-    content: '请问用什么武器比较好打？我现在用的棍法感觉伤害不够',
+    content: '光线确实很棒，构图也很舒服',
     images: [] as string[],
     likes: 3,
     liked: false,
-    replies: [
-      {
-        id: 301,
-        nickname: '一念',
-        replyTo: '云玩家',
-        content: '推荐用劈棍，伤害高而且硬直长',
-        time: '20分钟前',
-        likes: 5,
-        liked: false,
-      },
-      {
-        id: 302,
-        nickname: '像素猎人',
-        replyTo: '一念',
-        content: '劈棍确实好用，配合变身伤害爆炸',
-        time: '10分钟前',
-        likes: 2,
-        liked: false,
-      },
-    ],
-  },
-  {
-    id: 4,
-    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=fantasy%20elf%20character%20avatar%20green%20eyes%20magical%20forest%20background&image_size=square',
-    nickname: '星辰大海',
-    time: '15分钟前',
-    content: '画面真的太震撼了，截图都能当壁纸用',
-    images: [
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=game%20screenshot%20beautiful%20scenery%20sunset%20fantasy%20landscape&image_size=landscape_16_9',
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=game%20screenshot%20epic%20battle%20scene%20cinematic%20lighting&image_size=landscape_16_9',
-    ],
-    likes: 6,
-    liked: false,
     replies: [],
-  },
-  {
-    id: 5,
-    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cute%20panda%20avatar%20bamboo%20green%20background&image_size=square',
-    nickname: '熊猫不吃竹',
-    time: '10分钟前',
-    content: '分享三张我截的boss战名场面，每一帧都是艺术',
-    images: [
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=epic%20game%20boss%20fight%20fire%20explosion%20dramatic%20angle&image_size=square',
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=game%20character%20ultimate%20skill%20golden%20light%20effect&image_size=square',
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=game%20victory%20screen%20celebration%20confetti%20epic%20moment&image_size=square',
-    ],
-    likes: 12,
-    liked: false,
-    replies: [],
-  },
-  {
-    id: 6,
-    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ninja%20cat%20avatar%20dark%20purple%20background&image_size=square',
-    nickname: '忍者猫',
-    time: '5分钟前',
-    content: '这个隐藏彩蛋你们发现了吗？在第三章地图左下角的石头后面',
-    images: [
-      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=game%20hidden%20easter%20egg%20secret%20area%20glowing%20treasure&image_size=landscape_16_9',
-    ],
-    likes: 8,
-    liked: false,
-    replies: [
-      {
-        id: 601,
-        nickname: '一念',
-        replyTo: '忍者猫',
-        content: '卧槽真的有！我玩了三遍都没发现',
-        time: '3分钟前',
-        likes: 4,
-        liked: false,
-      },
-      {
-        id: 602,
-        nickname: '游戏达人',
-        replyTo: '忍者猫',
-        content: '这个彩蛋触发后还有隐藏剧情，太细节了',
-        time: '1分钟前',
-        likes: 2,
-        liked: false,
-      },
-    ],
   },
 ])
 
+// 评论输入
 const commentInput = ref('')
 const inputFocused = ref(false)
-
-// 光标位置
 const cursorPosition = ref(-1)
-
-// 评论插图（最多3张）
+const showInputPopup = ref(false)
 const commentImages = ref<string[]>([])
+
+// 回复状态
+const replyTarget = ref<{ commentId: number, nickname: string } | null>(null)
+
+const inputPlaceholder = computed(() => {
+  if (replyTarget.value) {
+    return `回复 ${replyTarget.value.nickname}`
+  }
+  return '写评论...'
+})
 
 function chooseCommentImage() {
   if (commentImages.value.length >= 3) {
@@ -201,77 +154,12 @@ function removeCommentImage(index: number) {
   commentImages.value.splice(index, 1)
 }
 
-// 回复状态
-const replyTarget = ref<{ commentId: number, nickname: string } | null>(null)
-
-const inputPlaceholder = computed(() => {
-  if (replyTarget.value) {
-    return `回复 ${replyTarget.value.nickname}`
-  }
-  return '写评论...'
-})
-
-// 判断内容是否为 HTML（富文本编辑器产出）
-function isHtmlContent(content: string) {
-  return /<[a-z][\s\S]*>/i.test(content)
-}
-
-// 从 HTML 中提取纯文本（用于列表预览等场景）
-function stripHtml(html: string) {
-  return html.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim()
-}
-
-function formatReplyTime(timestamp: number) {
-  const diff = Date.now() - timestamp
-  const minutes = Math.floor(diff / (60 * 1000))
-  const hours = Math.floor(diff / (60 * 60 * 1000))
-  const days = Math.floor(diff / (24 * 60 * 60 * 1000))
-  const months = Math.floor(diff / (30 * 24 * 60 * 60 * 1000))
-  const years = Math.floor(diff / (365 * 24 * 60 * 60 * 1000))
-  if (minutes < 1) return '回复于 刚刚'
-  if (minutes < 60) return `回复于 ${minutes}分钟前`
-  if (hours < 24) return `回复于 ${hours}小时前`
-  if (days < 30) return `回复于 ${days}天前`
-  if (months < 12) return `回复于 ${months}个月前`
-  return `回复于 ${years}年前`
-}
-
-function toggleLike() {
-  post.value.liked = !post.value.liked
-  post.value.likes += post.value.liked ? 1 : -1
-}
-
-function toggleFollow() {
-  // 注意：当前使用 post.id 作为用户标识（mock 数据）
-  // 接入真实 API 后应替换为 post.authorId 或 post.userId
-  followStore.toggleFollow({
-    id: String(post.value.id),
-    nickname: post.value.nickname,
-    avatar: post.value.avatar,
-  })
-}
-
-// 关注状态从 store 获取
-const isFollowed = computed(() => followStore.isFollowed(String(post.value.id)))
-
-function toggleCollect() {
-  post.value.collected = !post.value.collected
-  post.value.collects += post.value.collected ? 1 : -1
-}
-
-function focusInput() {
-  replyTarget.value = null
-  inputFocused.value = true
-}
-
 function activateInput() {
   showInputPopup.value = true
   cursorPosition.value = commentInput.value.length
   inputFocused.value = true
   showEmoji.value = false
 }
-
-const showInputPopup = ref(false)
 
 function dismissInput() {
   inputFocused.value = false
@@ -281,7 +169,6 @@ function dismissInput() {
 }
 
 function onInputBlur() {
-  // 如果 emoji 面板打开，不关闭输入状态
   if (!showEmoji.value) {
     setTimeout(() => {
       if (!showEmoji.value) {
@@ -307,7 +194,6 @@ function sendComment() {
   if (!commentInput.value.trim() && commentImages.value.length === 0) return
 
   if (replyTarget.value) {
-    // 回复某条评论
     const targetComment = comments.value.find(c => c.id === replyTarget.value!.commentId)
     if (targetComment) {
       targetComment.replies.push({
@@ -322,7 +208,6 @@ function sendComment() {
     }
   }
   else {
-    // 发表新评论
     comments.value.push({
       id: Date.now(),
       avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=default%20user%20avatar%20simple%20gray%20background&image_size=square',
@@ -344,26 +229,11 @@ function sendComment() {
   uni.showToast({ title: '评论成功', icon: 'success' })
 }
 
-function goBack() {
-  uni.navigateBack()
-}
-
-function previewImage(index: number) {
-  uni.previewImage({
-    current: index,
-    urls: post.value.images,
-  })
-}
-
-const showActionSheet = ref(false)
-
 // Emoji 面板
-const emojiPickerRef = ref()
 const showEmoji = ref(false)
 
 function toggleEmojiPanel() {
   if (showEmoji.value) {
-    // 关闭 emoji，延迟后弹出键盘
     showEmoji.value = false
     setTimeout(() => {
       cursorPosition.value = commentInput.value.length
@@ -371,7 +241,6 @@ function toggleEmojiPanel() {
     }, 50)
   }
   else {
-    // 打开 emoji，收起键盘
     inputFocused.value = false
     setTimeout(() => {
       showEmoji.value = true
@@ -383,6 +252,28 @@ function onEmojiSelect(emoji: string) {
   commentInput.value += emoji
   cursorPosition.value = commentInput.value.length
 }
+
+// 判断内容是否为 HTML
+function isHtmlContent(content: string) {
+  return /<[a-z][\s\S]*>/i.test(content)
+}
+
+function formatReplyTime(timestamp: number) {
+  const diff = Date.now() - timestamp
+  const minutes = Math.floor(diff / (60 * 1000))
+  const hours = Math.floor(diff / (60 * 60 * 1000))
+  const days = Math.floor(diff / (24 * 60 * 60 * 1000))
+  if (minutes < 1) return '回复于 刚刚'
+  if (minutes < 60) return `回复于 ${minutes}分钟前`
+  if (hours < 24) return `回复于 ${hours}小时前`
+  return `回复于 ${days}天前`
+}
+
+function goBack() {
+  uni.navigateBack()
+}
+
+const showActionSheet = ref(false)
 
 function openActionSheet() {
   showActionSheet.value = true
@@ -422,11 +313,33 @@ function handleReport() {
     <scroll-view scroll-y class="detail-content" style="padding-top: calc(44px + env(safe-area-inset-top))">
       <!-- 帖子主体 -->
       <view class="bg-white px-16px pb-16px pt-20px">
-        <!-- 标题（内容区第一视觉焦点） -->
-        <text v-if="post.title" class="text-20px text-[#272E3B] font-700 leading-30px">{{ post.title }}</text>
+        <!-- 图片轮播（导航栏下方，用户信息上方） -->
+        <view v-if="post.images.length > 0" class="relative mb-16px -mx-16px -mt-20px">
+          <swiper
+            class="w-full"
+            style="height: 360px"
+            :current="currentImageIndex"
+            @change="onSwiperChange"
+          >
+            <swiper-item v-for="(img, index) in post.images" :key="index">
+              <view class="h-full w-full" @click="previewImage(index)">
+                <image :src="img" mode="aspectFill" class="h-full w-full" />
+              </view>
+            </swiper-item>
+          </swiper>
+          <!-- 图片指示器 -->
+          <view v-if="post.images.length > 1" class="absolute bottom-12px left-0 right-0 flex items-center justify-center gap-6px">
+            <view
+              v-for="(_, index) in post.images"
+              :key="index"
+              class="rounded-full"
+              :class="currentImageIndex === index ? 'h-6px w-16px bg-white' : 'h-6px w-6px bg-white/50'"
+            />
+          </view>
+        </view>
 
         <!-- 用户信息 -->
-        <view class="flex items-center gap-10px" :class="post.title ? 'mt-14px' : ''">
+        <view class="flex items-center gap-10px">
           <view class="h-44px w-44px overflow-hidden rounded-full">
             <image :src="post.avatar" mode="aspectFill" class="h-full w-full" />
           </view>
@@ -448,22 +361,8 @@ function handleReport() {
 
         <!-- 正文内容 -->
         <view class="mt-16px rich-content">
-          <!-- 富文本内容（editor 产出的 HTML） -->
           <rich-text v-if="isHtmlContent(post.content)" :nodes="post.content" class="text-15px text-[#3D3D3D] leading-26px" />
-          <!-- 纯文本内容（兼容旧数据） -->
           <text v-else class="text-15px text-[#3D3D3D] leading-26px" style="white-space: pre-wrap">{{ post.content }}</text>
-        </view>
-
-        <!-- 图片展示（仅纯文本帖子展示独立图片区域，富文本帖子图片已内嵌） -->
-        <view v-if="!isHtmlContent(post.content) && post.images.length" class="mt-16px flex flex-col gap-8px">
-          <view
-            v-for="(img, index) in post.images"
-            :key="index"
-            class="w-full overflow-hidden rounded-12px"
-            @click="previewImage(index)"
-          >
-            <image :src="img" mode="widthFix" class="w-full" />
-          </view>
         </view>
       </view>
 
@@ -600,9 +499,7 @@ function handleReport() {
 
     <!-- 输入状态：蒙版 + 输入栏 -->
     <view v-if="showInputPopup">
-      <!-- 蒙版遮罩 -->
       <view class="fixed inset-0 z-80 bg-black/40" @click="dismissInput" />
-      <!-- 输入栏 -->
       <view class="fixed bottom-0 left-0 right-0 z-90 bg-white" style="padding-bottom: max(env(safe-area-inset-bottom), 0px)">
         <view class="border-t border-[#F0F0F0] px-15px py-8px">
           <!-- 已选图片预览 -->
@@ -640,7 +537,6 @@ function handleReport() {
                 @input="cursorPosition = -1"
                 @confirm="sendComment"
               />
-              <!-- emoji 打开时覆盖一层，点击切换回键盘 -->
               <view v-if="showEmoji" class="absolute inset-0 z-10" @click="toggleEmojiPanel" />
             </view>
             <!-- 插图按钮 -->
@@ -669,6 +565,7 @@ function handleReport() {
         </view>
       </view>
     </view>
+
     <!-- 底部操作弹窗 -->
     <view v-if="showActionSheet" class="fixed inset-0 z-100" @click="closeActionSheet">
       <view class="absolute inset-0 bg-black/40" />

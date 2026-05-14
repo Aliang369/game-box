@@ -8,7 +8,7 @@ definePage({
   },
 })
 
-// 版块信息
+// 版块信息（sectionColor 必须为 6 位 hex 格式，如 #3AAFDC，用于拼接 alpha 后缀）
 const sectionId = ref('')
 const sectionTitle = ref('')
 const sectionColor = ref('#3AAFDC')
@@ -168,10 +168,33 @@ function formatReplyTime(timestamp: number) {
   return `${days}天前`
 }
 
+// 板块分区
+const activeCategory = ref('all')
+// 分区列表为静态数据，无需响应式
+const categories = [
+  { id: 'all', name: '全部' },
+  { id: 'guide', name: '攻略' },
+  { id: 'question', name: '求助' },
+  { id: 'discuss', name: '讨论' },
+  { id: 'share', name: '分享' },
+  { id: 'bug', name: 'BUG反馈' },
+]
+
 function goDetail(post: typeof posts.value[0]) {
   uni.navigateTo({
     url: `/pages/circle/detail?id=${post.id}`,
   })
+}
+
+function goPublish() {
+  uni.navigateTo({
+    url: `/pages/forum/publish?sectionId=${sectionId.value}&sectionTitle=${encodeURIComponent(sectionTitle.value)}&sectionColor=${encodeURIComponent(sectionColor.value)}`,
+  })
+}
+
+// 从 HTML 中提取纯文本（列表预览用）
+function stripHtml(html: string) {
+  return html.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim()
 }
 </script>
 
@@ -287,6 +310,27 @@ function goDetail(post: typeof posts.value[0]) {
         </view>
       </view>
 
+      <!-- 板块分区 -->
+      <scroll-view scroll-x class="whitespace-nowrap px-15px pb-12px">
+        <view class="inline-flex gap-8px">
+          <view
+            v-for="cat in categories"
+            :key="cat.id"
+            class="inline-flex h-30px items-center rounded-30px px-14px"
+            :style="{
+              background: activeCategory === cat.id ? `${sectionColor}15` : '#F2F3F5',
+              border: activeCategory === cat.id ? `1px solid ${sectionColor}40` : '1px solid transparent',
+            }"
+            @click="activeCategory = cat.id"
+          >
+            <text
+              class="text-12px font-500"
+              :style="{ color: activeCategory === cat.id ? sectionColor : '#8F96A3' }"
+            >{{ cat.name }}</text>
+          </view>
+        </view>
+      </scroll-view>
+
       <!-- 帖子信息流 -->
       <view class="px-15px pb-40px">
         <view
@@ -307,7 +351,7 @@ function goDetail(post: typeof posts.value[0]) {
           <!-- 内容 -->
           <text v-if="post.title" class="mt-10px text-15px text-[#272E3B] font-600 leading-22px">{{ post.title }}</text>
           <view class="mt-8px">
-            <text class="text-14px text-[#3D3D3D] leading-22px">{{ post.content }}</text>
+            <text class="text-14px text-[#3D3D3D] leading-22px">{{ stripHtml(post.content) }}</text>
           </view>
 
           <!-- 图片 -->
@@ -373,6 +417,16 @@ function goDetail(post: typeof posts.value[0]) {
           </view>
         </view>
       </view>
+    </view>
+
+    <!-- 发帖悬浮按钮 -->
+    <view
+      class="fixed right-20px bottom-80px z-100 flex h-52px w-52px items-center justify-center rounded-full shadow-lg"
+      :style="{ background: `linear-gradient(135deg, ${sectionColor}, ${sectionColor}DD)` }"
+      style="box-shadow: 0 4px 16px rgba(58, 175, 220, 0.35)"
+      @click="goPublish"
+    >
+      <view class="i-carbon-edit h-24px w-24px text-white" />
     </view>
 
     <!-- 版块详情弹窗 -->
