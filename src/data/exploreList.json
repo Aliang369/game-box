@@ -3,19 +3,25 @@
 		"exploreState": 0,
 		"exploreDate": "2025年3月15日至2025年12月31日",
 		"exploreImage": "/static/explore/newsGame1.jpg",
-		"exploreVisibleness": 0
+		"exploreVisibleness": 0,
+		"linkType": "game",
+		"linkTarget": "1"
 	}, {
 		"exploreId": "2",
 		"exploreState": 1,
 		"exploreDate": "2025年3月15日至2025年12月31日",
 		"exploreImage": "/static/explore/newsGame1.jpg",
-		"exploreVisibleness": 0
+		"exploreVisibleness": 0,
+		"linkType": "h5",
+		"linkTarget": "https://www.example.com/activity/spring-2025"
 	},
 	{
-		"exploreId": "2",
+		"exploreId": "3",
 		"exploreState": 2,
 		"exploreDate": "2025年3月15日至2025年12月31日",
 		"exploreImage": "/static/explore/newsGame1.jpg",
-		"exploreVisibleness": 0
+		"exploreVisibleness": 0,
+		"linkType": "post",
+		"linkTarget": "1001"
 	}
 ]

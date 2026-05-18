@@ -13,6 +13,15 @@ export interface ILoginForm {
 }
 
 /**
+ * 注册表单
+ */
+export interface IRegisterForm {
+  username: string
+  password: string
+  confirmPassword: string
+}
+
+/**
  * 获取验证码
  * @returns ICaptcha 验证码
  */
@@ -96,6 +105,17 @@ export function wxLogin(data: { code: string }) {
   return http.post<IAuthLoginRes>('/auth/wxLogin', data)
 }
 
+/**
+ * 用户注册
+ * @param registerForm 注册表单
+ */
+export function register(registerForm: IRegisterForm) {
+  if (isMockEnabled) {
+    return mockRegister(registerForm)
+  }
+  return http.post<IAuthLoginRes>('/auth/register', registerForm)
+}
+
 // ============ Mock 实现 ============
 
 function mockLogin(_loginForm: ILoginForm): Promise<IAuthLoginRes> {
@@ -119,5 +139,16 @@ function mockGetUserInfo(): Promise<IUserInfoRes> {
         avatar: '/static/logo.png',
       })
     }, 200)
+  })
+}
+
+function mockRegister(_form: IRegisterForm): Promise<IAuthLoginRes> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        token: `mock_token_${Date.now()}`,
+        expiresIn: 7200,
+      })
+    }, 500)
   })
 }

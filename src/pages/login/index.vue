@@ -1,7 +1,4 @@
 <script lang="ts" setup>
-import { useToast } from 'wot-design-uni'
-import { useTokenStore } from '@/store/token'
-
 definePage({
   style: {
     navigationStyle: 'custom',
@@ -9,6 +6,10 @@ definePage({
   },
   excludeLoginPath: true,
 })
+
+import { useToast } from 'wot-design-uni'
+import { useTokenStore } from '@/store/token'
+import { register } from '@/api/login'
 
 type AuthMode = 'login' | 'register'
 
@@ -104,9 +105,18 @@ async function handleSubmit() {
     toast.warning('两次密码不一致')
     return
   }
-  // TODO: 接入注册 API
-  toast.success('注册成功')
-  authMode.value = 'login'
+  try {
+    await register({
+      username: registerForm.value.account,
+      password: registerForm.value.password,
+      confirmPassword: registerForm.value.confirmPassword,
+    })
+    toast.success('注册成功')
+    authMode.value = 'login'
+  }
+  catch {
+    toast.warning('注册失败，请重试')
+  }
 }
 </script>
 

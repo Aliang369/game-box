@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { useGameStore } from '@/store/game'
-
 definePage({
   style: {
     navigationStyle: 'custom',
@@ -8,7 +6,12 @@ definePage({
   },
 })
 
+import { useGameStore } from '@/store/game'
+import { useUserStore } from '@/store/user'
+import { uploadAvatar, updateProfile } from '@/api/user'
+
 const gameStore = useGameStore()
+const userStore = useUserStore()
 
 // 表单数据（仅 UI 交互，后端接入后从接口读取）
 const form = ref({
@@ -52,8 +55,16 @@ function chooseAvatar() {
     count: 1,
     sizeType: ['compressed'],
     sourceType: ['album', 'camera'],
-    success: (_res) => {
-      // TODO: 接入后端后上传头像
+    success: async (res) => {
+      const tempFilePath = res.tempFilePaths[0]
+      try {
+        const { avatarUrl } = await uploadAvatar(tempFilePath)
+        userStore.setUserAvatar(avatarUrl)
+        uni.showToast({ title: '头像更新成功', icon: 'success' })
+      }
+      catch {
+        uni.showToast({ title: '头像上传失败', icon: 'none' })
+      }
     },
   })
 }
@@ -81,12 +92,22 @@ function onDateCancel() {
   showDatePicker.value = false
 }
 
-function handleSave() {
-  // TODO: 接入后端后提交到 API
-  uni.showToast({ title: '保存成功', icon: 'success' })
-  setTimeout(() => {
-    uni.navigateBack({ delta: 1 })
-  }, 500)
+async function handleSave() {
+  try {
+    await updateProfile({
+      nickname: form.value.nickname,
+      bio: form.value.bio,
+      gender: form.value.gender,
+      birthday: form.value.birthday,
+    })
+    uni.showToast({ title: '保存成功', icon: 'success' })
+    setTimeout(() => {
+      uni.navigateBack({ delta: 1 })
+    }, 500)
+  }
+  catch {
+    uni.showToast({ title: '保存失败，请重试', icon: 'none' })
+  }
 }
 </script>
 

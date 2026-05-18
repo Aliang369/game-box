@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useGameStore } from '@/store/game'
 import { useFavoriteStore } from '@/store/favorite'
+import { useDownloadStore } from '@/store/download'
 import type { Game } from '@/types/game.d'
 
 definePage({
@@ -12,6 +13,7 @@ definePage({
 
 const gameStore = useGameStore()
 const favoriteStore = useFavoriteStore()
+const downloadStore = useDownloadStore()
 
 const props = defineProps<{
   gameid: string
@@ -48,6 +50,38 @@ function leftClick() {
 
 function goToDownload() {
   uni.navigateTo({ url: '/pages/download/download' })
+}
+
+// 下载状态
+const downloadStatus = computed(() => props.gameid ? downloadStore.getGameDownloadStatus(props.gameid) : null)
+const downloadBtnText = computed(() => {
+  switch (downloadStatus.value) {
+    case 'waiting': return '等待中'
+    case 'downloading': {
+      const task = downloadStore.findTask(props.gameid)
+      return task ? `${task.progress}%` : '下载中'
+    }
+    case 'paused': return '重新下载'
+    case 'completed': return '已下载'
+    case 'failed': return '重新下载'
+    default: return '下载'
+  }
+})
+
+function handleDownload() {
+  if (!props.gameid) return
+  if (downloadStatus.value === 'downloading' || downloadStatus.value === 'waiting') {
+    // 正在下载，跳转到下载中心
+    uni.navigateTo({ url: '/pages/download/download' })
+    return
+  }
+  if (downloadStatus.value === 'completed') {
+    // 已完成，尝试安装
+    downloadStore.installApk(props.gameid)
+    return
+  }
+  // 开始下载 / 重试
+  downloadStore.startDownload(props.gameid)
 }
 
 function toggleExpand() {
@@ -175,8 +209,9 @@ function openShare() {
         <view
           class="w-90% max-w-600px h-50px flex justify-center items-center text-white text-18px rounded-30px"
           style="background: linear-gradient(95deg, #2bc18a, #5ad88c)"
+          @click="handleDownload"
         >
-          下载
+          {{ downloadBtnText }}
         </view>
       </view>
     </view>

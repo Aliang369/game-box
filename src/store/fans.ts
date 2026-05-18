@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { getFansList } from '@/api/social'
 
 export interface FanUser {
   id: string
@@ -28,7 +29,7 @@ export const useFansStore = defineStore('fans', () => {
     }
   }
 
-  // 添加粉丝（模拟）
+  // 添加粉丝
   function addFan(user: FanUser) {
     if (!fansList.value.some(u => u.id === user.id)) {
       fansList.value.push(user)
@@ -43,6 +44,27 @@ export const useFansStore = defineStore('fans', () => {
     }
   }
 
+  /**
+   * 从后端加载粉丝列表
+   */
+  async function fetchFansList() {
+    try {
+      const res = await getFansList()
+      if (res && Array.isArray(res)) {
+        fansList.value = res.map(item => ({
+          id: String(item.userId),
+          nickname: item.nickname,
+          avatar: item.avatar,
+          description: item.bio,
+          followedBack: item.isFollowed,
+        }))
+      }
+    }
+    catch (error) {
+      console.warn('[FansStore] 加载粉丝列表失败，使用本地数据', error)
+    }
+  }
+
   return {
     fansList,
     fansCount,
@@ -50,6 +72,7 @@ export const useFansStore = defineStore('fans', () => {
     toggleFollowBack,
     addFan,
     removeFan,
+    fetchFansList,
   }
 }, {
   persist: true,

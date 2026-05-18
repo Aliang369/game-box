@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import { useGameStore } from '@/store/game'
+import { useDownloadStore } from '@/store/download'
 import type { Game } from '@/types/game.d'
 
 const gameStore = useGameStore()
+const downloadStore = useDownloadStore()
 
 // 排行榜列表：按 gameCount 降序排列，取前50
 const rankList = computed(() => {
@@ -14,6 +16,36 @@ const rankList = computed(() => {
 function handleClick(item: Game) {
   gameStore.incrementGameCount(item.gameid)
   uni.navigateTo({ url: `/pages/gamedetail/gamedetail?gameid=${item.gameid}` })
+}
+
+/** 获取下载按钮文本 */
+function getDownloadBtnText(gameid: string): string {
+  const status = downloadStore.getGameDownloadStatus(gameid)
+  switch (status) {
+    case 'waiting': return '等待'
+    case 'downloading': {
+      const task = downloadStore.findTask(gameid)
+      return task ? `${task.progress}%` : '...'
+    }
+    case 'paused': return '重下'
+    case 'completed': return '打开'
+    case 'failed': return '重试'
+    default: return '下载'
+  }
+}
+
+/** 处理下载按钮点击 */
+function handleDownload(item: Game) {
+  const status = downloadStore.getGameDownloadStatus(item.gameid)
+  if (status === 'downloading' || status === 'waiting') {
+    uni.navigateTo({ url: '/pages/download/download' })
+    return
+  }
+  if (status === 'completed') {
+    downloadStore.installApk(item.gameid)
+    return
+  }
+  downloadStore.startDownload(item.gameid)
 }
 </script>
 
@@ -70,8 +102,9 @@ function handleClick(item: Game) {
           class="w-70px h-35px rounded-30px flex justify-center items-center text-white text-15px flex-shrink-0 border-none p-0"
           style="background: linear-gradient(95deg, #2bc18a, #5ad88c)"
           hover-class="opacity-70"
+          @click.stop="handleDownload(item)"
         >
-          下载
+          {{ getDownloadBtnText(item.gameid) }}
         </button>
       </view>
     </view>

@@ -29,6 +29,40 @@ function getStateStyle(state: number): string {
     default: return ''
   }
 }
+
+/** 卡片点击跳转 */
+function handleCardClick(item: any) {
+  const { linkType, linkTarget } = item
+  if (!linkType || !linkTarget) return
+
+  switch (linkType) {
+    case 'game':
+      // 跳转到游戏详情页
+      uni.navigateTo({ url: `/pages/gamedetail/gamedetail?gameid=${linkTarget}` })
+      break
+    case 'h5':
+      // 跳转到 H5 链接（使用 webview 或外部浏览器）
+      // #ifdef H5
+      window.open(linkTarget, '_blank')
+      // #endif
+      // #ifdef APP-PLUS
+      plus.runtime.openURL(linkTarget)
+      // #endif
+      // #ifdef MP-WEIXIN
+      uni.setClipboardData({
+        data: linkTarget,
+        success: () => {
+          uni.showToast({ title: '链接已复制，请在浏览器中打开', icon: 'none', duration: 2500 })
+        },
+      })
+      // #endif
+      break
+    case 'post':
+      // 跳转到帖子详情页
+      uni.navigateTo({ url: `/pages/circle/detail?id=${linkTarget}` })
+      break
+  }
+}
 </script>
 
 <template>
@@ -40,11 +74,19 @@ function getStateStyle(state: number): string {
       </view>
     </view>
 
+    <!-- 空状态 -->
+    <view v-if="gameStore.visibleExploreList.length === 0" class="flex flex-col items-center justify-center pt-120px">
+      <image src="/static/explore/newsTop-title.png" mode="aspectFit" class="w-80px h-80px opacity-20" />
+      <text class="text-15px text-[#C0C4CC] mt-16px">暂无福利活动</text>
+      <text class="text-13px text-[#D9D9D9] mt-8px">敬请期待，精彩活动即将上线</text>
+    </view>
+
     <!-- 探索列表 -->
     <view
       v-for="item in gameStore.visibleExploreList"
       :key="item.exploreId"
       class="mx-15px mb-20px h-210px bg-white rounded-15px overflow-hidden"
+      @click="handleCardClick(item)"
     >
       <view class="mx-15px my-10px flex items-center justify-between">
         <view
@@ -60,6 +102,6 @@ function getStateStyle(state: number): string {
       </view>
     </view>
 
-    <view class="bottom-text">没有更多了</view>
+    <view v-if="gameStore.visibleExploreList.length > 0" class="bottom-text">没有更多了</view>
   </view>
 </template>

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { ExploreItem, Game, RecommendGame, RecommendGameConfig, SearchHotItem, SwiperGameItem, SwiperItem, UserInfo } from '@/types/game.d'
+import { getExploreList, getGameList, getRecommendGame, getSearchHotList, getSwiperList } from '@/api/game'
 import gameListJson from '@/data/gameList.json'
 import swiperListJson from '@/data/swiperList.json'
 import recommendGameJson from '@/data/recommendGame.json'
@@ -25,6 +26,9 @@ export const useGameStore = defineStore('game', () => {
 
   // 用户列表
   const userList = ref<UserInfo[]>(userListJson as UserInfo[])
+
+  // 数据加载状态
+  const loading = ref(false)
 
   // 可见游戏列表
   const visibleGameList = computed<Game[]>(() => {
@@ -89,12 +93,52 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
+  /**
+   * 从后端API加载所有数据
+   * 失败时保留本地JSON数据作为fallback
+   */
+  async function fetchAllData() {
+    loading.value = true
+    try {
+      const [gamesRes, swiperRes, recommendRes, exploreRes, searchhotRes] = await Promise.allSettled([
+        getGameList(),
+        getSwiperList(),
+        getRecommendGame(),
+        getExploreList(),
+        getSearchHotList(),
+      ])
+
+      if (gamesRes.status === 'fulfilled' && gamesRes.value) {
+        gameList.value = gamesRes.value as unknown as Game[]
+      }
+      if (swiperRes.status === 'fulfilled' && swiperRes.value) {
+        swiperList.value = swiperRes.value as unknown as SwiperItem[]
+      }
+      if (recommendRes.status === 'fulfilled' && recommendRes.value) {
+        recommendGameConfig.value = recommendRes.value as unknown as RecommendGameConfig[]
+      }
+      if (exploreRes.status === 'fulfilled' && exploreRes.value) {
+        exploreList.value = exploreRes.value as unknown as ExploreItem[]
+      }
+      if (searchhotRes.status === 'fulfilled' && searchhotRes.value) {
+        searchhotList.value = searchhotRes.value as unknown as SearchHotItem[]
+      }
+    }
+    catch (error) {
+      console.warn('[GameStore] 从API加载数据失败，使用本地数据', error)
+    }
+    finally {
+      loading.value = false
+    }
+  }
+
   return {
     gameList,
     swiperList,
     exploreList,
     searchhotList,
     userList,
+    loading,
     visibleGameList,
     activeSwiperList,
     recommendGame,
@@ -103,5 +147,6 @@ export const useGameStore = defineStore('game', () => {
     currentUser,
     findGame,
     incrementGameCount,
+    fetchAllData,
   }
 })

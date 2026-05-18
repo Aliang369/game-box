@@ -6,6 +6,8 @@ definePage({
   },
 })
 
+import { createPost } from '@/api/post'
+
 // 板块信息（sectionColor 必须为 6 位 hex 格式，用于拼接 alpha 后缀）
 const sectionId = ref('')
 const sectionTitle = ref('')
@@ -166,35 +168,45 @@ const hasContent = computed(() => {
   return dynamicContent.value.trim().length > 0 || dynamicImages.value.length > 0
 })
 
-function publish() {
+async function publish() {
   if (!canPublish.value) return
   uni.showLoading({ title: '发布中...' })
-  setTimeout(() => {
+  try {
+    const content = layoutMode.value === 'article' ? '' : dynamicContent.value
+    const images = layoutMode.value === 'article' ? [] : dynamicImages.value
+    await createPost({
+      content,
+      images,
+      sectionId: sectionId.value,
+      categoryId: selectedCategory.value,
+      type: layoutMode.value === 'article' ? 'article' : (images.length > 0 ? 'image' : 'text'),
+    })
     uni.hideLoading()
     uni.showToast({ title: '发布成功', icon: 'success' })
     setTimeout(() => {
       uni.navigateBack()
     }, 1200)
-  }, 800)
+  }
+  catch {
+    uni.hideLoading()
+    uni.showToast({ title: '发布失败，请重试', icon: 'none' })
+  }
 }
+
+// 放弃编辑确认弹窗
+const goBackPopupRef = ref()
 
 function goBack() {
   if (hasContent.value) {
-    uni.showModal({
-      title: '提示',
-      content: '确定要放弃编辑吗？',
-      confirmText: '放弃',
-      confirmColor: '#FF6B6B',
-      success: (res) => {
-        if (res.confirm) {
-          uni.navigateBack()
-        }
-      },
-    })
+    goBackPopupRef.value?.open()
   }
   else {
     uni.navigateBack()
   }
+}
+
+function confirmGoBack() {
+  uni.navigateBack()
 }
 </script>
 
@@ -355,6 +367,18 @@ function goBack() {
       <!-- 表情面板 -->
       <EmojiPicker :show="showEmoji" @select="onEmojiSelect" />
     </view>
+
+    <!-- 放弃编辑确认弹窗 -->
+    <ConfirmPopup
+      ref="goBackPopupRef"
+      title="放弃编辑"
+      content="确定要放弃编辑吗？已编辑的内容将不会保存。"
+      confirm-text="放弃"
+      cancel-text="取消"
+      confirm-color="linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)"
+      icon-type="warning"
+      @confirm="confirmGoBack"
+    />
   </view>
 </template>
 

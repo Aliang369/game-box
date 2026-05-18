@@ -25,6 +25,10 @@ function goToPrivacy() {
   uni.navigateTo({ url: '/pages/settings/privacy/privacy' })
 }
 
+function goToAccount() {
+  uni.navigateTo({ url: '/pages/settings/account/account' })
+}
+
 function handleLogout() {
   logoutPopupRef.value?.open()
 }
@@ -65,7 +69,7 @@ async function confirmLogout() {
     <view class="mx-20px pt-90px">
       <!-- 账号 -->
       <view class="text-14px text-[#82898f] px-15px py-10px">账号</view>
-      <view class="h-60px w-full rounded-20px bg-white flex items-center px-15px box-border">
+      <view class="h-60px w-full rounded-20px bg-white flex items-center px-15px box-border" @click="goToAccount">
         <view class="flex justify-between items-center w-full">
           <view>账号与安全</view>
           <view class="w-24px h-24px">
